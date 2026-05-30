@@ -12,6 +12,8 @@ function App() {
 
   const predict = async () => {
     if(!ticker) return;
+    setError("");
+    setResult(null);
     setLoading(true);
 
     try{
@@ -19,14 +21,16 @@ function App() {
         `http://127.0.0.1:8000/predict/${ticker}`
       );
       const data = await response.json();
+      console.log("STATUS:", response.status);
+console.log("DATA:", data);
       if(!response.ok){
-
+            setResult(null);
             setError(data.detail);
             return;
         }
         setResult(data);
     }catch(error){
-      console.error(error);
+      setError("Unable to connect to server.");
     }
     finally
     {setLoading(false);}
@@ -50,9 +54,9 @@ function App() {
       }
       {
           error && (
-              <p className="error">
-                  ❌ {error}
-              </p>
+              <div className="card">
+                  <p>{error}</p>
+              </div>
           )
       }
       {
