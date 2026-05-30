@@ -22,7 +22,14 @@ app.add_middleware(
 
 @app.get("/predict/{ticker}")
 def get_predict(ticker : str):
-    return(predict(ticker.upper()))
+    try:
+        return predict(ticker)
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
 
 
 app.mount(

@@ -1,17 +1,26 @@
 import yfinance as yf
 import numpy as np
 import joblib
+from backend.ml.train import train
+import os
 
 from tensorflow.keras.models import load_model
 
 
 def predict(name):
-    if(name=="AAPL"):
-        model = load_model("backend/ml/apple_model.keras")
-        scaler = joblib.load("backend/ml/apple_scaler.pkl")
-    else:
-        model = load_model("backend/ml/tsla_model.keras")
-        scaler = joblib.load("backend/ml/TSLA_scaler.pkl")
+    model_path = (
+    f"backend/ml/models/{name}_model.keras"
+    )
+    scaler_path = (
+    f"backend/ml/scalers/{name}_scaler.pkl"
+    )
+    print(model_path)
+    if (not os.path.exists(model_path) or not os.path.exists(scaler_path)):
+        train(name)
+    
+    model = load_model(model_path)
+    scaler = joblib.load(scaler_path)
+    
 
     data = yf.download(
         name,

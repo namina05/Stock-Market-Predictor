@@ -8,6 +8,7 @@ function App() {
   const [ticker, setTicker] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const predict = async () => {
     if(!ticker) return;
@@ -18,11 +19,17 @@ function App() {
         `http://127.0.0.1:8000/predict/${ticker}`
       );
       const data = await response.json();
-      setResult(data);
+      if(!response.ok){
+
+            setError(data.detail);
+            return;
+        }
+        setResult(data);
     }catch(error){
       console.error(error);
     }
-    setLoading(false);
+    finally
+    {setLoading(false);}
   }
 
   return (
@@ -40,6 +47,13 @@ function App() {
         loading&&(
           <p>Predicting.....</p>
         )
+      }
+      {
+          error && (
+              <p className="error">
+                  ❌ {error}
+              </p>
+          )
       }
       {
         result&&(

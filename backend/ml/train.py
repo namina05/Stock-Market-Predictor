@@ -8,83 +8,94 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense,Dropout,LSTM
 from tensorflow.keras.callbacks import EarlyStopping
 
-print("DOWNLOADING STOCK MARKET DATA")
+def train(ticker):
+    print("DOWNLOADING STOCK MARKET DATA")
 
-data = yf.download(
-    "TSLA",
-    start="2020-01-01",
-    end="2026-01-01"
-)
-
-close_prices = data['Close'].values.reshape(-1,1)
-
-scaler = MinMaxScaler(feature_range=(0,1))
-scaled_data = scaler.fit_transform(close_prices)
-
-joblib.dump(scaler, "backend/ml/TSLA_scaler.pkl")
-
-x_train = []
-y_train = []
-
-for i in range(60,len(scaled_data)):
-    x_train.append(scaled_data[i-60:i,0])
-    y_train.append(scaled_data[i,0])
-
-x_train = np.array(x_train)
-y_train = np.array(y_train)
-
-model = Sequential()
-
-model.add(
-    LSTM(
-        input_shape = (60,1),
-        units = 50,
-        return_sequences = True
+    data = yf.download(
+        ticker,
+        start="2020-01-01",
+        end="2026-01-01"
     )
-)
 
-model.add(Dropout(0.2))
+    if data.empty:
+        raise ValueError(
+            f"Ticker '{ticker}' not found."
+        )
 
-model.add(
-    LSTM(
-        input_shape = (60,1),
-        units = 50,
-        return_sequences = False
+    if len(data) < 61:
+        raise ValueError(
+            f"Not enough historical data for {ticker}"
+        )
+    
+    close_prices = data['Close'].values.reshape(-1,1)
+
+    scaler = MinMaxScaler(feature_range=(0,1))
+    scaled_data = scaler.fit_transform(close_prices)
+
+    joblib.dump(scaler, f"backend/ml/scalers/{ticker}_scaler.pkl")
+
+    x_train = []
+    y_train = []
+
+    for i in range(60,len(scaled_data)):
+        x_train.append(scaled_data[i-60:i,0])
+        y_train.append(scaled_data[i,0])
+
+    x_train = np.array(x_train)
+    y_train = np.array(y_train)
+
+    model = Sequential()
+
+    model.add(
+        LSTM(
+            input_shape = (60,1),
+            units = 50,
+            return_sequences = True
+        )
     )
-)
 
-model.add(Dropout(0.2))
+    model.add(Dropout(0.2))
 
-model.add(Dense(25))
+    model.add(
+        LSTM(
+            input_shape = (60,1),
+            units = 50,
+            return_sequences = False
+        )
+    )
 
-model.add(Dense(1))
+    model.add(Dropout(0.2))
 
-print("COMPILING")
+    model.add(Dense(25))
 
-model.compile(
-    optimizer = "adam",
-    loss = "mean_squared_error"
-)
+    model.add(Dense(1))
 
-early_stop = EarlyStopping(
-    monitor = "val_loss",
-    patience = 3,
-    restore_best_weights = True
-)
+    print("COMPILING")
 
-print("TRAINING MODEL")
+    model.compile(
+        optimizer = "adam",
+        loss = "mean_squared_error"
+    )
 
-model.fit(
-    x_train,
-    y_train,
-    epochs = 50,
-    batch_size = 32,
-    validation_split = 0.2,
-    callbacks = [early_stop]
-)
+    early_stop = EarlyStopping(
+        monitor = "val_loss",
+        patience = 3,
+        restore_best_weights = True
+    )
 
-print("SAVING")
+    print("TRAINING MODEL")
 
-model.save("backend/ml/tsla_model.keras")
+    model.fit(
+        x_train,
+        y_train,
+        epochs = 50,
+        batch_size = 32,
+        validation_split = 0.2,
+        callbacks = [early_stop]
+    )
 
-print("completed")
+    print("SAVING")
+
+    model.save(f"backend/ml/models/{ticker}_model.keras")
+
+    print("completed")
