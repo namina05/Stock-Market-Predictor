@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
 import './App.css'
+import Tickercard from './components/tickercard'
+import Errorcard from './components/errorcard'
+import Searchbar from './components/searchbar'
+import Chart from './components/chart'
 
 function App() {
   const [ticker, setTicker] = useState("");
@@ -39,14 +40,7 @@ console.log("DATA:", data);
   return (
     <div className='container'>
       <h1>STOCK MARKET PREDICTOR</h1>
-      <div className='search'>
-      <input 
-      type="text"
-      placeholder='ENTER COMPANY NAME'
-      value={ticker}
-      onChange={(e)=>setTicker(e.target.value.toUpperCase())}></input>
-      <button className='btn' onClick={predict}>PREDICT</button>
-      </div>
+     <Searchbar ticker={ticker} setTicker={setTicker} predict={predict} />
       {
         loading&&(
           <p>Predicting.....</p>
@@ -54,28 +48,15 @@ console.log("DATA:", data);
       }
       {
           error && (
-              <div className="card">
-                  <p>{error}</p>
-              </div>
+              <Errorcard error={error}/>
           )
       }
       {
         result&&(
-          <div className='card'>
-            <h2>{result.ticker}</h2>
-            <p>
-              Current Price : ${result.current_price}
-            </p>
-            <p>
-            Predicted Price:
-            ${result.predicted_price}
-          </p>
-
-          <p>
-            Expected Change:
-            {result.change_percent}%
-          </p>
-          </div>
+          <>
+        <Tickercard result={result}/>
+        <Chart ticker={result.ticker}/>
+        </>
         )
       }
     </div>

@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from backend.ml.predict import predict
 from fastapi.staticfiles import StaticFiles
+from backend.services.chart import get_history
 
 app = FastAPI()
 
@@ -32,6 +33,15 @@ def get_predict(ticker : str):
             detail=str(e)
         )
 
+@app.get("/predict/{ticker}/chart")
+def get_chart(ticker:str):
+    try:
+        return get_history(ticker)
+    except ValueError as e:
+        raise HTTPException(
+            status_code = 400,
+            detail = str(e)
+        )
 
 app.mount(
     "/",
