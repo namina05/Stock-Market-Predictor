@@ -29,7 +29,7 @@ body{
 
 .container h1{
 
-    font-family:'Courier New', Courier, monospace;
+    font-family: 'Times New Roman', Times, serif;
 
     font-size:4.5rem;
     font-weight: 800;
@@ -109,7 +109,60 @@ input::placeholder{
         0 0 15px #00e5ff,
         0 0 30px #00e5ff;
 }
+.navbar{
+    top: 25px;
+    left : 40px;
+    gap: 10px;
+    position : absolute;
+    display: flex;
+}
 
+.nav-link{
+    text-decoration: none;
+    color: #7dd3fc;
+    font-size: small;
+    transition: .3s ease;
+}
+.wishlist{
+    font-family: 'Courier New', Courier, monospace;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(450px,450px));
+    gap : 1rem;
+    margin-top: 10px;
+    width: 100%;
+
+}
+.wishcard{
+    width: 400px;      /* try 350-450px */
+    padding: 10px;
+    border-radius:24px;
+    background:
+        rgba(255,255,255,.05);
+
+    backdrop-filter:blur(20px);
+
+    border:
+        1px solid rgba(255,255,255,.1);
+
+    box-shadow:
+        0 0 30px rgba(0,229,255,.15);
+
+    text-align:center;
+    transition:.3s ease;
+
+    transform: scale(0.85);
+}
+
+.wishcard h2{
+    font-family: 'Times New Roman', Times, serif;
+        color:#00e5ff;
+    font-size: 2rem;   
+}
+
+.wishcard p{
+    font-size: 1.2rem;
+}
 .card{
     width:750px;
 

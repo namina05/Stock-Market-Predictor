@@ -59,7 +59,8 @@ function Chart({ticker}){
     ) return null;
 
     return (
-        <div className="card">
+        <>
+        {/* // <div className="card"> */}
             <h2>PRICE HISTORY</h2>
             <ResponsiveContainer width="100%" height= {300}>
                 <LineChart data={chartData}>
@@ -74,7 +75,7 @@ function Chart({ticker}){
                     <Line type="monotone" dataKey="price" dot={false}/>
                 </LineChart>    
             </ResponsiveContainer> 
-        </div>
+        </>
     )
 
 }

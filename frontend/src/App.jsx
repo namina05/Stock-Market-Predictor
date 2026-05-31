@@ -1,65 +1,27 @@
-import { useState } from 'react'
+import {BrowserRouter, Route,Routes} from "react-router-dom"
 import './App.css'
-import Tickercard from './components/tickercard'
-import Errorcard from './components/errorcard'
-import Searchbar from './components/searchbar'
-import Chart from './components/chart'
+import Homepage from './pages/homepage'
+import Starred from "./pages/starred"
 
 function App() {
-  const [ticker, setTicker] = useState("");
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  return(
+    <BrowserRouter>
 
-  const predict = async () => {
-    if(!ticker) return;
-    setError("");
-    setResult(null);
-    setLoading(true);
+      <Routes>
 
-    try{
-      const response = await fetch(
-        `http://127.0.0.1:8000/predict/${ticker}`
-      );
-      const data = await response.json();
-      console.log("STATUS:", response.status);
-console.log("DATA:", data);
-      if(!response.ok){
-            setResult(null);
-            setError(data.detail);
-            return;
-        }
-        setResult(data);
-    }catch(error){
-      setError("Unable to connect to server.");
-    }
-    finally
-    {setLoading(false);}
-  }
+        <Route
+        path="/"
+        element = {<Homepage/>}
+        />
 
-  return (
-    <div className='container'>
-      <h1>STOCK MARKET PREDICTOR</h1>
-     <Searchbar ticker={ticker} setTicker={setTicker} predict={predict} />
-      {
-        loading&&(
-          <p>Predicting.....</p>
-        )
-      }
-      {
-          error && (
-              <Errorcard error={error}/>
-          )
-      }
-      {
-        result&&(
-          <>
-        <Tickercard result={result}/>
-        <Chart ticker={result.ticker}/>
-        </>
-        )
-      }
-    </div>
+        <Route
+        path = "/watchlist"
+        element = {<Starred/>}
+        />
+
+      </Routes>
+
+    </BrowserRouter>
   )
 }
 
